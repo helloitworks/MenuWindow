@@ -89,6 +89,8 @@
         else
         {
         }
+        //这里需要反选，否则下次直接enter pressed也被认为是有选中
+        [self.menuWindowCtrl.itemsTable deselectAll:nil];
         [self closeMenuWindow];
 		result = YES;
     }
