@@ -12,6 +12,7 @@
 
 @implementation AppDelegate
 @synthesize searchField = _searchField;
+@synthesize menuWindowCtrl = _menuWindowCtrl;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -24,7 +25,7 @@
     NSLog(@"%@", searchString);
     if ([searchString isEqualToString:@""])
     {
-        [self closeMenuWindown];
+        [self closeMenuWindow];
     }
     else
     {
@@ -38,13 +39,13 @@
             [menuItems addObject:item];
         }
         
-        if (!self.menuWindow)
+        if (!self.menuWindowCtrl)
         {
-            self.menuWindow = [[SYXMenuWindowController alloc] initWithWindowNibName:@"SYXMenuWindow"];
-            self.menuWindow.delegate = self;
+            self.menuWindowCtrl = [[SYXMenuWindowController alloc] initWithWindowNibName:@"SYXMenuWindow"];
+            self.menuWindowCtrl.delegate = self;
         }
         
-        [self.menuWindow setMenuItems:menuItems];
+        [self.menuWindowCtrl setMenuItems:menuItems];
         if (menuItems.count > 0)
         {
             [self showMenuWindow];
@@ -53,9 +54,9 @@
     }
 }
 
-- (void)closeMenuWindown
+- (void)closeMenuWindow
 {
-    [self.menuWindow closeWindow];
+    [self.menuWindowCtrl closeWindow];
 }
 
 - (void)showMenuWindow
@@ -63,13 +64,13 @@
 
     [self popUpMenuWindowBehindSearchField];
     //必须remove后再add，否则close childWindow再打开childWindow，移动父窗口，子窗口不会跟着一起移动
-    [self.window removeChildWindow:self.menuWindow.window];
-    [self.window addChildWindow:self.menuWindow.window ordered:NSWindowAbove];
+    [self.window removeChildWindow:self.menuWindowCtrl.window];
+    [self.window addChildWindow:self.menuWindowCtrl.window ordered:NSWindowAbove];
 }
 
 - (void)popUpMenuWindowBehindSearchField
 {
-    [self.menuWindow popUpContextMenuAtPoint:NSMakePoint(self.window.frame.origin.x + self.searchField.frame.origin.x, self.window.frame.origin.y + self.searchField.frame.origin.y -2)];
+    [self.menuWindowCtrl popUpContextMenuAtPoint:NSMakePoint(self.window.frame.origin.x + self.searchField.frame.origin.x, self.window.frame.origin.y + self.searchField.frame.origin.y -2)];
 }
 
 
@@ -79,15 +80,15 @@
     if (commandSelector == @selector(insertNewline:))
     {
 		// enter pressed
-        NSInteger selectedRow = [self.menuWindow.itemsTable selectedRow];
+        NSInteger selectedRow = [self.menuWindowCtrl.itemsTable selectedRow];
         if (selectedRow >= 0)
         {
-            self.searchField.stringValue = ((SYXMenuItem *)[self.menuWindow.menuItems objectAtIndex:selectedRow]).title;
+            self.searchField.stringValue = ((SYXMenuItem *)[self.menuWindowCtrl.menuItems objectAtIndex:selectedRow]).title;
         }
         else
         {
         }
-        [self closeMenuWindown];
+        [self closeMenuWindow];
 		result = YES;
     }
 	else if(commandSelector == @selector(moveLeft:))
@@ -117,24 +118,24 @@
 
 - (void)moveUp
 {
-    NSInteger selectedRow = [self.menuWindow.itemsTable selectedRow];
+    NSInteger selectedRow = [self.menuWindowCtrl.itemsTable selectedRow];
     selectedRow --;
     NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:selectedRow];
-    [self.menuWindow.itemsTable selectRowIndexes:indexSet byExtendingSelection:NO];
+    [self.menuWindowCtrl.itemsTable selectRowIndexes:indexSet byExtendingSelection:NO];
 }
 
 - (void)moveDown
 {
-    NSInteger selectedRow = [self.menuWindow.itemsTable selectedRow];
+    NSInteger selectedRow = [self.menuWindowCtrl.itemsTable selectedRow];
     selectedRow ++;
     NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:selectedRow];
-    [self.menuWindow.itemsTable selectRowIndexes:indexSet byExtendingSelection:NO];
+    [self.menuWindowCtrl.itemsTable selectRowIndexes:indexSet byExtendingSelection:NO];
 }
 
 - (void)onMouseDownAtRow:(NSUInteger)rowIndex
 {
-    self.searchField.stringValue = ((SYXMenuItem *)[self.menuWindow.menuItems objectAtIndex:rowIndex]).title;
-    [self closeMenuWindown];
+    self.searchField.stringValue = ((SYXMenuItem *)[self.menuWindowCtrl.menuItems objectAtIndex:rowIndex]).title;
+    [self closeMenuWindow];
 
 }
 

@@ -13,14 +13,14 @@
 @interface AppDelegate : NSObject <NSApplicationDelegate, SYXMenuWindowControllerViewDelegate>
 {
     NSSearchField *_searchField;
-
+    SYXMenuWindowController *_menuWindowCtrl;
 }
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet NSSearchField *searchField;
 
 
-@property (retain) SYXMenuWindowController *menuWindow;
+@property (retain) SYXMenuWindowController *menuWindowCtrl;
 
 - (void)onMouseDownAtRow:(NSUInteger)rowIndex;
 
