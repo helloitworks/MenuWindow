@@ -16,6 +16,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidResize:) name:NSWindowDidResizeNotification object:[NSApp mainWindow]];
 
 }
 
@@ -137,6 +138,12 @@
     self.searchField.stringValue = ((SYXMenuItem *)[self.menuWindowCtrl.menuItems objectAtIndex:rowIndex]).title;
     [self closeMenuWindow];
 
+}
+
+//窗口resize时，关闭下拉列表
+- (void)windowDidResize:(NSNotification *)notification
+{
+    [self closeMenuWindow];
 }
 
 @end
