@@ -26,7 +26,7 @@
     return self;
 }
 
-#pragma mark Opening menu without status items
+#pragma mark - 弹出窗口
 
 - (void)popUpContextMenuAtPoint:(NSPoint)point {
 	if (timer) { // Window shouldn't be closing right now. Stop the timer.
@@ -38,53 +38,54 @@
 	
 	[self loadHeightsWithWindowOrigin:point];
     [self.window orderFront:nil];
-
-    //syx:todo not work here
-	//[self.window makeKeyAndOrderFront:self];
-	//[[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
 }
 
+// 在指定的Point弹出窗口
 - (void)loadHeightsWithWindowOrigin:(NSPoint)point {
     NSRect newWindowFrame = self.window.frame;
 
-    // Work out the height of the cells in the table view
 	int sizeOfCellsInTableView = 0;
     for (SYXMenuItem *item in self.menuItems) {
 		sizeOfCellsInTableView += [self.itemsTable rectOfRow:[menuItems indexOfObject:item]].size.height;
 	}
     
+    //设置新窗口的大小
     newWindowFrame.size.height = sizeOfCellsInTableView + 10;
     newWindowFrame.origin.y = point.y - newWindowFrame.size.height - 2;
 	newWindowFrame.origin.x = point.x;
 
-    [(RoundWindowFrameView *)[[self.window contentView] superview] setAllCornersRounded:YES];
-	//[(RoundWindowFrameView *)[[self.window contentView] superview] setProMode:YES];
     [self.window setFrame:newWindowFrame display:YES];
 
+    //将contentView的superview改成四角都是圆角
+    [(RoundWindowFrameView *)[[self.window contentView] superview] setAllCornersRounded:YES];
+	//[(RoundWindowFrameView *)[[self.window contentView] superview] setProMode:YES];
+    
+    //设置新contentview的大小
     NSRect contentViewFrame = newWindowFrame;
     contentViewFrame.origin.x = 0;
     contentViewFrame.origin.y = 5;
     contentViewFrame.size.height -= 10;
     [self.window.contentView setFrame:contentViewFrame];
+    [(RoundWindowFrameView *)[self.window contentView] setFrame:contentViewFrame];
 
+    //设置tableview的大小
     //table的position是相对于contentview的，所以origin.y设置成0，而不是5
     NSRect tableOldFrame = self.itemsTable.frame;
     tableOldFrame.origin.x = 0;
     tableOldFrame.size.height = sizeOfCellsInTableView;
-    tableOldFrame.origin.y =  0;
-    //[self.itemsTable setFrame:tableOldFrame display:YES];
-    
-    [[[self.itemsTable superview] superview] setFrame:tableOldFrame ];
-    return;
+    tableOldFrame.origin.y = 0;
+    [[[self.itemsTable superview] superview] setFrame:tableOldFrame];
 }
 
-#pragma mark Handling changes to the window
+#pragma mark 关闭窗口
 
 - (void)closeWindow
 {
-    //下面两行注释用于立即关闭窗口，而不是渐渐退隐窗口
+    //下面两行用于立即关闭窗口，而不是渐渐退隐窗口
     [self.window orderOut:nil];
     return;
+    
+    //todo:渐渐退隐窗口会有焦点的问题.
     timer = [[NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(fade:) userInfo:nil repeats:YES] retain];
 }
 
@@ -101,7 +102,6 @@
         [timer release];
         timer = nil;
         
-        //[self.window close];
         [self.window orderOut:nil];
         
         // Make the window fully opaque again for next time.
@@ -110,7 +110,7 @@
 }
 
 
-#pragma mark Handling changes to menuItems and headerView
+#pragma mark - tableview data
 
 - (NSArray *)menuItems {
 	return menuItems;
@@ -128,8 +128,7 @@
 }
 
 
-#pragma mark - tableview datasource
-// The only essential/required tableview dataSource method
+#pragma mark  tableview datasource
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
     NSInteger count = [self.menuItems count];
@@ -137,26 +136,18 @@
 }
 
 
-#pragma mark - tableview delegate
-
+#pragma mark  tableview delegate
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
 	return 24.f;
 }
 
 
-// This method is optional if you use bindings to provide the data
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    // Group our "model" object, which is a dictionary
     SYXMenuItem *item = [self _entityForRow:row];
-    
-    // In IB the tableColumn has the identifier set to the same string as the keys in our dictionary
     NSString *identifier = [tableColumn identifier];
-
-    // We pass us as the owner so we can setup target/actions into this main controller object
     NSTableCellView *cellView = [tableView makeViewWithIdentifier:identifier owner:self];
-    // Then setup properties on the cellView based on the column
     cellView.textField.stringValue = item.title;
     return cellView;
 

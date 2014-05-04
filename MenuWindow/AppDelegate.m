@@ -13,8 +13,6 @@
 @implementation AppDelegate
 @synthesize searchField = _searchField;
 
-@synthesize connection = _connection;
-@synthesize receivedData = _receivedData;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 
@@ -24,34 +22,17 @@
 {
     NSString *searchString = [self.searchField stringValue];
     NSLog(@"%@", searchString);
-    if ([searchString isEqualToString:@"test"] || [searchString isEqualToString:@""])
+    if ([searchString isEqualToString:@""])
     {
         [self closeMenuWindown];
     }
     else
     {
-        if (self.connection)
-        {
-            [self.connection cancel];
-        }
-        NSString *url = [NSString stringWithFormat:@"http://appstore.mac.xunlei.com/common/search_suggestions.php?word=%@", searchString];
-        NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]
-                                                    cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-                                                timeoutInterval:15.0];
-
-
-        self.receivedData = [NSMutableData dataWithCapacity: 0];
-        
-        // create the connection with the request
-        // and start loading the data
-        self.connection = [[[NSURLConnection alloc] initWithRequest:urlRequest delegate:self] autorelease];
-        
-        
         NSMutableArray *menuItems = [[NSMutableArray alloc]init];
         int j = random() % 6 + 1;
         for (int i=0; i < j; i++)
         {
-            NSString *result = [NSString stringWithFormat:@"i = %lu", random()];
+            NSString *result = [NSString stringWithFormat:@"%@, row = %d", searchString, i];
             SYXMenuItem *item = [[SYXMenuItem alloc] init];
             item.title = result;
             [menuItems addObject:item];
@@ -70,34 +51,6 @@
         }
         
     }
-}
-
-#pragma mark - connection delegate
-
-//响应的时候触发
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    [self.receivedData setLength:0];
-}
-
-//有新的数据收到，会触发，我们把新的数据append
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    [self.receivedData appendData:data];
-}
-
-//完成
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    NSString *receivedDataString = [[[NSString alloc] initWithData:self.receivedData encoding:NSASCIIStringEncoding] autorelease];
-    NSLog(@"receivedDataString = %@", receivedDataString);
-
-}
-
-//错误
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-
 }
 
 - (void)closeMenuWindown
