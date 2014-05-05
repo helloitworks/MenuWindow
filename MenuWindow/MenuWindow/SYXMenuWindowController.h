@@ -31,6 +31,7 @@
 @property (nonatomic, retain) NSArray *menuItems;
 @property (assign)  id delegate;
 
+@property (assign)  NSUInteger windowWidth;
 
 - (void)popUpContextMenuAtPoint:(NSPoint)point;
 - (void)loadHeightsWithWindowOrigin:(NSPoint)point;

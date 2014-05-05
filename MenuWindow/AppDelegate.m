@@ -44,6 +44,7 @@
         {
             self.menuWindowCtrl = [[SYXMenuWindowController alloc] initWithWindowNibName:@"SYXMenuWindow"];
             self.menuWindowCtrl.delegate = self;
+            self.menuWindowCtrl.windowWidth = self.searchField.frame.size.width;
         }
         
         [self.menuWindowCtrl setMenuItems:menuItems];

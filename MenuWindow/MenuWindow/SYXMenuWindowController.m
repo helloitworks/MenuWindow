@@ -26,6 +26,21 @@
     return self;
 }
 
+- (NSUInteger)windowWidth
+{
+    return self.window.frame.size.width;
+}
+
+- (void)setWindowWidth:(NSUInteger)windowWith
+{
+    NSRect rect = self.window.frame;
+    rect.size.width = windowWith;
+    NSRect tableRect = [[self.itemsTable superview]superview].frame;
+    tableRect.size.width = windowWith;
+    [[[self.itemsTable superview] superview] setFrame:tableRect];
+    [self.window setFrame:rect display:YES];
+}
+
 #pragma mark - 弹出窗口
 
 - (void)popUpContextMenuAtPoint:(NSPoint)point {
