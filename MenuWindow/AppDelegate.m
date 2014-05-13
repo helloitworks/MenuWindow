@@ -56,6 +56,13 @@
     }
 }
 
+//搜索框失去焦点时让搜索列表消失
+- (void)controlTextDidEndEditing:(NSNotification *)obj
+{
+    [self closeMenuWindow];
+}
+
+
 - (void)closeMenuWindow
 {
     [self.menuWindowCtrl closeWindow];
@@ -90,7 +97,7 @@
         else
         {
         }
-        //这里需要反选，否则下次直接enter pressed也被认为是有选中
+        //这里需要取消选择，否则下次直接enter pressed也被认为是有选中
         [self.menuWindowCtrl.itemsTable deselectAll:nil];
         [self closeMenuWindow];
 		result = YES;
@@ -140,6 +147,8 @@
 {
     self.searchField.stringValue = ((SYXMenuItem *)[self.menuWindowCtrl.menuItems objectAtIndex:rowIndex]).title;
     [self closeMenuWindow];
+    //这里需要取消选择，否则下次直接enter pressed也被认为是有选中
+    [self.menuWindowCtrl.itemsTable deselectAll:nil];
 
 }
 
